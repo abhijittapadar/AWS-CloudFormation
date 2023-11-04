@@ -1,0 +1,9 @@
+# create a new S3 bucket 
+Resources:
+  MyS3Bucket: # logical ID
+    Type: 'AWS::S3::Bucket' 
+    Properties:
+      BucketName: abhi-tapadar-bucket-14042023
+      Tags: # list of tags
+        - Key: CloudFormationLab
+          Value: abhitapadar

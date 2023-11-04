@@ -1,0 +1,42 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: Part 1 - Build a webapp stack with CloudFormation
+
+Resources:
+  WebAppInstance:
+    Type: AWS::EC2::Instance
+    Properties:
+      ImageId: ami-06e4fcc744fb5d6c9 # ImageID valid only in ap-south-1 region
+      InstanceType: t2.micro
+      KeyName: DataServer1 # <-- Change to use your key-pair name
+      SecurityGroupIds:
+        - !Ref Websg1
+
+  Websg1:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupName: !Join ["-", [websg1]]
+      GroupDescription: "Allow HTTP/HTTPS and RDP inbound and outbound traffic"
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: 443
+          ToPort: 443
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: 3389
+          ToPort: 3389
+          CidrIp: 0.0.0.0/0
+          
+   #Allocate an Elastic IP in your Account
+  DemoElasticIP:
+    Type: AWS::EC2::EIP
+    Properties:
+      Domain: vpc
+      InstanceId: !Ref WebAppInstance 
+Outputs:
+  WebAppInstance:
+    Description: Instance Id 
+    Value: !Ref WebAppInstance

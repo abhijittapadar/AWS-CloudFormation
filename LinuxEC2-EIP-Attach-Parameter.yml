@@ -1,0 +1,57 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: Part 1 - Build a webapp stack with CloudFormation
+
+Parameters:
+
+  ImageId:
+    Type: String
+    Description: 'Linux 2 AMI for Ireland eu-west1 Region'
+    Default: 'ami-022daa15b37b5e55d'
+  InstanceType:
+    Type: String
+    Description: Choosing  t2 micro because it is free
+    Default: t2.micro
+  KeyName:
+    Description: SSH Keypair to login to the instance
+    Type: String
+    Default: DemoKey
+
+Resources:
+  WebAppInstance:
+    Type: AWS::EC2::Instance
+    Properties:
+      ImageId: !Ref ImageId
+      InstanceType: !Ref InstanceType
+      KeyName: !Ref KeyName
+      SecurityGroupIds:
+        - !Ref Websg
+
+  Websg:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupName: !Join ["-", [websg, dev]]
+      GroupDescription: "Allow HTTP/HTTPS and SSH inbound and outbound traffic"
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: 443
+          ToPort: 443
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          CidrIp: 0.0.0.0/0
+          
+   #Allocate an Elastic IP in your Account
+  DemoElasticIP:
+    Type: AWS::EC2::EIP
+    Properties:
+      Domain: vpc
+      InstanceId: !Ref WebAppInstance 
+Outputs:
+  WebAppInstance:
+    Description: Instance Id 
+    Value: !Ref WebAppInstance
